@@ -1,0 +1,167 @@
+<form [formGroup]="signupForm">
+    <mat-stepper [linear]="true" #stepper>
+        <mat-step [stepControl]="personalInformation" label="Account information">
+            <form [formGroup]="personalInformation">
+                <div class="col">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input matInput formControlName="name" type="text" placeholder="Ex. Joe">
+                        <mat-error *ngIf="name?.touched && name?.invalid">
+                            <ng-container *ngIf="name?.errors?.['required']">Name is required!<br></ng-container>
+                            <ng-container *ngIf="name?.errors?.['minlength']">At least 3 chars<br></ng-container>
+                            <ng-container *ngIf="name?.errors?.['maxlength']">At most 10 chars<br></ng-container>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Birth date</mat-label>
+                        <input formControlName="birthDate" matInput [matDatepickerFilter]="dateFilter"
+                            [matDatepicker]="picker" placeholder="MM/DD/YY">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+
+                        <mat-error *ngIf="birthDate?.touched && birthDate?.invalid">
+                            <ng-container *ngIf="birthDate?.errors?.['required']">Birth date is required</ng-container>
+                            <ng-container *ngIf="birthDate?.errors?.['shouldBeOlder']">You should be older than 18 years
+                                old</ng-container>
+                        </mat-error>
+                    </mat-form-field>
+
+                </div>
+
+                <mat-radio-group formControlName="gender" class="gender">
+                    <mat-label>Gender</mat-label>
+                    <mat-radio-button value="male">Male</mat-radio-button>
+                    <mat-radio-button value="female">Female</mat-radio-button>
+
+                    <mat-error *ngIf="clicked && gender?.errors?.['required']">Gender is required!</mat-error>
+                </mat-radio-group>
+
+                <div class="col">
+                    <mat-form-field *ngIf="militaryVisibility()">
+                        <mat-label>Military status</mat-label>
+                        <mat-select formControlName="militaryStatus">
+                            <mat-option value="completed">Completed</mat-option>
+                            <mat-option value="postponed">Postponed</mat-option>
+                            <mat-option value="exempted">Exempted</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <button mat-button (click)="clicked = true" matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="accountInformation" label="Account information">
+            <form [formGroup]="accountInformation">
+                <mat-form-field>
+                    <mat-label>Email</mat-label>
+                    <input matInput formControlName="email" type="email" placeholder="Email">
+
+                    <mat-error>
+                        <ng-container>Email is required!</ng-container>
+                        <ng-container *ngIf="email?.errors?.['email']">This is not a valid Email!</ng-container>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Password</mat-label>
+                    <input matInput formControlName="password" type="password">
+
+                    <mat-error *ngIf="password?.touched && password?.invalid">
+                        <ng-container *ngIf="password?.errors?.['required']">Password is required!<br></ng-container>
+                        <ng-container *ngIf="password?.errors?.['minlength']">At least 8 characters<br></ng-container>
+                        <ng-container *ngIf="password?.errors?.['maxlength']">At most 15 characters<br></ng-container>
+                        <ng-container *ngIf="password?.errors?.['shouldHaveUpper']">At least one capital
+                            character<br></ng-container>
+                        <ng-container *ngIf="password?.errors?.['shouldHaveNum']">At least one special
+                            character<br></ng-container>
+                        <ng-container *ngIf="password?.errors?.['shouldHaveSpecial']">At least one number</ng-container>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Confirm password</mat-label>
+                    <input matInput formControlName="passowrdConfirmation" type="password">
+
+                    <mat-error>Password
+                        doesn't match</mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Phone</mat-label>
+                    <input matInput formControlName="phone" type="tel" placeholder="Ex. 01234567890">
+                    <mat-error *ngIf="phone?.touched && phone?.invalid">
+                        <ng-container *ngIf="phone?.errors?.['pattern']">This is not a phone number</ng-container>
+                    </mat-error>
+                </mat-form-field>
+                <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button matStepperNext (click)="onclick()">Next</button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step [stepControl]="addressiInformation" label="Address information" [optional]="false">
+            <form [formGroup]="addressiInformation">
+                <mat-form-field class="col md-4 position-relative">
+                    <mat-label>Country</mat-label>
+                    <mat-select formControlName="country" (change)="onCountryChange()">
+                        <mat-option *ngFor="let place of map | keyvalue" [value]="place.key">{{ place.key
+                            }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field *ngIf="country?.value != null" class="col md-4 position-relative">
+                    <mat-label>City</mat-label>
+                    <mat-select formControlName="city">
+                        <mat-option *ngFor="let city of map.get(country?.value) | keyvalue" [value]="city.value">{{
+                            city.value
+                            }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+
+        <mat-step>
+            <ng-template matStepLabel>Done</ng-template>
+            <h2>Personal Informaion</h2>
+            <mat-list>
+                <mat-list-item *ngFor="let control of personalInformation.controls | keyvalue">
+                    <span matListItemLine>{{ control.key }}</span>
+                    <span matListItemTitle>{{ control.value.value }}</span>
+                </mat-list-item>
+            </mat-list>
+            <h2>Account Informaion</h2>
+            <mat-list>
+                <mat-list-item>
+                    <span matListItemLine>{{ email }}</span>
+                    <span matListItemTitle>{{ email.value }}</span>
+                </mat-list-item>
+                <mat-list-item>
+                    <span matListItemLine>{{ phone }}</span>
+                    <span matListItemTitle>{{ phone.value }}</span>
+                </mat-list-item>
+            </mat-list>
+            <h2>Address Informaion</h2>
+            <mat-list>
+                <mat-list-item *ngFor="let control of addressiInformation.controls | keyvalue">
+                    <span matListItemLine>{{ control.key }}</span>
+                    <span matListItemTitle>{{ control.value.value }}</span>
+                </mat-list-item>
+            </mat-list>
+            <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button (click)="stepper.reset()">Reset</button>
+                <button mat-button>Submit</button>
+            </div>
+        </mat-step>
+    </mat-stepper>
+
+</form>
