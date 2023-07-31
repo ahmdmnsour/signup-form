@@ -31,8 +31,6 @@ export class SignupFormComponent {
       birthDate: new FormControl('', [
         Validators.required,
         CustomValidators.ageValidator
-        // CustomValidators.shouldBeOlder,
-        // CustomValidators.shouldBeYounger
       ]),
       gender: new FormControl('', Validators.required),
       militaryStatus: new FormControl()
@@ -76,11 +74,6 @@ export class SignupFormComponent {
     }
     return true;
   };
-
-  // onPasswordInput() {
-  //   if (this.accountInformation.hasError('mismatach'))
-  //     this.passowrdConfirmation.setErrors([{'mismatach': true}]);
-  // }
 
   onCountryChange() {
     if (this.country?.value != 'Country') {
@@ -155,15 +148,5 @@ export class SignupFormComponent {
   get birthDate() {
     return this.signupForm['controls'].personalInformation['controls'].birthDate;
   }
-
-  // ngOnInit() {
-  //   // Retrieve form data from local storage and populate the form
-  //   const savedData = localStorage.getItem('formData');
-  //   if (savedData) {
-  //     this.signupForm = JSON.parse(savedData);
-  //   }
-  // }
-
-  // localStorage.setItem('signupForm', JSON.stringify(this.formData));
 
 }
