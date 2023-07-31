@@ -11,11 +11,6 @@ export class SignupFormComponent {
 
   clicked = false;
 
-  onclick() {
-    console.log(this.passowrdConfirmation?.touched);
-    console.log(this.accountInformation.errors?.['mismatch']);
-  }
-
   map = new Map([
     ["Menofia", ["Qwesna", "Shebin El kom"]],
     ["Egypt", ["Cairo", "Alexandria"]],
@@ -23,6 +18,8 @@ export class SignupFormComponent {
   ]);
 
   currentDate = new Date().getFullYear();
+
+  user: any;
 
   signupForm = new FormGroup({
     personalInformation: new FormGroup({
@@ -33,8 +30,9 @@ export class SignupFormComponent {
       ]),
       birthDate: new FormControl('', [
         Validators.required,
-        CustomValidators.shouldBeOlder,
-        CustomValidators.shouldBeYounger
+        CustomValidators.ageValidator
+        // CustomValidators.shouldBeOlder,
+        // CustomValidators.shouldBeYounger
       ]),
       gender: new FormControl('', Validators.required),
       militaryStatus: new FormControl()
@@ -49,17 +47,27 @@ export class SignupFormComponent {
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(15),
-        CustomValidators.shouldHaveUpper,
-        CustomValidators.shouldHaveNum,
-        CustomValidators.shouldHaveSpecial
+        CustomValidators.patternValidator(/\d/, { shouldHaveNum: true }),
+        CustomValidators.patternValidator(/[A-Z]/, { shouldHaveUpper: true }),
+        CustomValidators.patternValidator(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/, { shouldHaveSpecial: true }),
       ]),
       passowrdConfirmation: new FormControl(),
-    }, [CustomValidators.MatchValidator('password', 'passowrdConfirmation')]),
+    }, CustomValidators.passwordMatchValidator),
     addressiInformation: new FormGroup({
       country: new FormControl(),
       city: new FormControl(),
     }),
   });
+
+  constructor() {
+    if (localStorage.getItem('user')) {
+      this.signupForm.setValue(JSON.parse(localStorage.getItem('user') || '{}'));
+    }
+  }
+
+  onSubmit() {
+    localStorage.setItem('user', JSON.stringify(this.signupForm.value));
+  }
 
   dateFilter = (d: Date | null): boolean => {
     const day = (d || new Date());

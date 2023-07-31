@@ -2,32 +2,31 @@
     <mat-stepper [linear]="true" #stepper>
         <mat-step [stepControl]="personalInformation" label="Account information">
             <form [formGroup]="personalInformation">
-                <div class="col">
-                    <mat-form-field>
-                        <mat-label>Name</mat-label>
-                        <input matInput formControlName="name" type="text" placeholder="Ex. Joe">
-                        <mat-error *ngIf="name?.touched && name?.invalid">
-                            <ng-container *ngIf="name?.errors?.['required']">Name is required!<br></ng-container>
-                            <ng-container *ngIf="name?.errors?.['minlength']">At least 3 chars<br></ng-container>
-                            <ng-container *ngIf="name?.errors?.['maxlength']">At most 10 chars<br></ng-container>
-                        </mat-error>
-                    </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name" type="text" placeholder="Ex. Joe">
+                    <mat-error *ngIf="name?.touched && name?.invalid">
+                        <ng-container *ngIf="name?.errors?.['required']">Name is required!<br></ng-container>
+                        <ng-container *ngIf="name?.errors?.['minlength']">At least 3 chars<br></ng-container>
+                        <ng-container *ngIf="name?.errors?.['maxlength']">At most 10 chars<br></ng-container>
+                    </mat-error>
+                </mat-form-field>
 
-                    <mat-form-field>
-                        <mat-label>Birth date</mat-label>
-                        <input formControlName="birthDate" matInput [matDatepickerFilter]="dateFilter"
-                            [matDatepicker]="picker" placeholder="MM/DD/YY">
-                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                        <mat-datepicker #picker></mat-datepicker>
+                <mat-form-field>
+                    <mat-label>Birth date</mat-label>
+                    <input formControlName="birthDate" matInput [matDatepickerFilter]="dateFilter"
+                        [matDatepicker]="picker" placeholder="MM/DD/YY">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
 
-                        <mat-error *ngIf="birthDate?.touched && birthDate?.invalid">
-                            <ng-container *ngIf="birthDate?.errors?.['required']">Birth date is required</ng-container>
-                            <ng-container *ngIf="birthDate?.errors?.['shouldBeOlder']">You should be older than 18 years
+                    <mat-error *ngIf="birthDate?.touched && birthDate?.invalid">
+                        <ng-container *ngIf="birthDate?.errors?.['required']">Birth date is required</ng-container>
+                        <ng-container *ngIf="birthDate?.errors?.['shouldBeOlder']">You should be older than 18 years
+                            old</ng-container>
+                            <ng-container *ngIf="birthDate?.errors?.['shouldBeYounger']">You should be younger than 90 years
                                 old</ng-container>
-                        </mat-error>
-                    </mat-form-field>
-
-                </div>
+                    </mat-error>
+                </mat-form-field>
 
                 <mat-radio-group formControlName="gender" class="gender">
                     <mat-label>Gender</mat-label>
@@ -37,16 +36,14 @@
                     <mat-error *ngIf="clicked && gender?.errors?.['required']">Gender is required!</mat-error>
                 </mat-radio-group>
 
-                <div class="col">
-                    <mat-form-field *ngIf="militaryVisibility()">
-                        <mat-label>Military status</mat-label>
-                        <mat-select formControlName="militaryStatus">
-                            <mat-option value="completed">Completed</mat-option>
-                            <mat-option value="postponed">Postponed</mat-option>
-                            <mat-option value="exempted">Exempted</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
+                <mat-form-field *ngIf="militaryVisibility()">
+                    <mat-label>Military status</mat-label>
+                    <mat-select formControlName="militaryStatus">
+                        <mat-option value="completed">Completed</mat-option>
+                        <mat-option value="postponed">Postponed</mat-option>
+                        <mat-option value="exempted">Exempted</mat-option>
+                    </mat-select>
+                </mat-form-field>
                 <div>
                     <button mat-button (click)="clicked = true" matStepperNext>Next</button>
                 </div>
@@ -60,7 +57,7 @@
                     <input matInput formControlName="email" type="email" placeholder="Email">
 
                     <mat-error>
-                        <ng-container>Email is required!</ng-container>
+                        <ng-container *ngIf="email?.errors?.['required']">Email is required!</ng-container>
                         <ng-container *ngIf="email?.errors?.['email']">This is not a valid Email!</ng-container>
                     </mat-error>
                 </mat-form-field>
@@ -85,7 +82,7 @@
                     <mat-label>Confirm password</mat-label>
                     <input matInput formControlName="passowrdConfirmation" type="password">
 
-                    <mat-error>Password
+                    <mat-error *ngIf="passowrdConfirmation?.hasError('mismatch')">Password
                         doesn't match</mat-error>
                 </mat-form-field>
 
@@ -98,7 +95,7 @@
                 </mat-form-field>
                 <div>
                     <button mat-button matStepperPrevious>Back</button>
-                    <button mat-button matStepperNext (click)="onclick()">Next</button>
+                    <button mat-button matStepperNext>Next</button>
                 </div>
             </form>
         </mat-step>
@@ -159,7 +156,7 @@
             <div>
                 <button mat-button matStepperPrevious>Back</button>
                 <button mat-button (click)="stepper.reset()">Reset</button>
-                <button mat-button>Submit</button>
+                <button mat-button (click)="onSubmit()">Submit</button>
             </div>
         </mat-step>
     </mat-stepper>
